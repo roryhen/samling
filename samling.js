@@ -31,7 +31,10 @@ function handleRequest(request, relayState) {
     $('#nameIdentifierFormat').val(info.login.nameIdentifierFormat);
     $('#callbackUrl').val(info.login.callbackUrl);
     $('#issuer').val(info.login.destination);
-    $('#relayState').val(decodeURIComponent(relayState));
+    $('#inResponseTo').val(info.login.id);
+    if (relayState) {
+      $('#relayState').val(decodeURIComponent(relayState));
+    }
 
     // auto-login if we also have the username already populated because of the samling cookie
     if ($('#signedInUser').text().trim().length > 0) {
@@ -67,7 +70,8 @@ $(function() {
         $('#issuer').val(data.issuer);
         $('#authnContextClassRef').val(data.authnContextClassRef);
         $('#nameIdentifierFormat').val(data.nameIdentifierFormat);
-      } catch (e) {
+        $('#inResponseTo').val(data.id);
+         } catch (e) {
         $('#signedInAt').text('ERROR: ' + e.message);
       }
     }
@@ -216,10 +220,13 @@ $(function() {
       key: $('#signatureKey').val().trim(),
       cert: $('#signatureCert').val().trim(),
       issuer: $('#issuer').val().trim(),
+      recipient: $('#callbackUrl').val().trim(),
+      inResponseTo: $('#inResponseTo').val().trim(),
       authnContextClassRef: $('#authnContextClassRef').val().trim(),
       nameIdentifierFormat: $('#nameIdentifierFormat').val().trim(),
       nameIdentifier: $('#nameIdentifier').val().trim(),
       sessionIndex: ('_samling_' + (Math.random() * 10000000)).replace('.', '_'),
+      lifetimeInSeconds: $('#lifetimeInSeconds').val().trim(),
       attributes: attributes
     };
     var assertion = window.SAML.createAssertion(options);
@@ -227,6 +234,7 @@ $(function() {
     var response = window.SAML.createResponse({
       instant: new Date().toISOString().trim(),
       issuer: $('#issuer').val().trim(),
+      inResponseTo: $('#inResponseTo').val().trim(),
       destination: callbackUrl,
       assertion: assertion,
       samlStatusCode: $('#samlStatusCode').val().trim(),

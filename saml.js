@@ -52,6 +52,7 @@ exports.parseRequest = function(options, request, callback) {
         info.login = {};
         info.login.callbackUrl = rootElement.getAttribute('AssertionConsumerServiceURL');
         info.login.destination = rootElement.getAttribute('Destination');
+        info.login.id = rootElement.getAttribute('ID');
         var nameIDPolicy = rootElement.getElementsByTagNameNS(SAMLP_NS, 'NameIDPolicy')[0];
         if (nameIDPolicy) {
           info.login.nameIdentifierFormat = nameIDPolicy.getAttribute('Format');
