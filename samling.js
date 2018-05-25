@@ -12,7 +12,12 @@ function logout(info) {
   deleteCookie();
   if (info) {
     var delim = info.callbackUrl.indexOf('?') === -1 ? '?' : '&';
-    location.href = info.callbackUrl + delim + 'SAMLResponse=' + encodeURIComponent(btoa(info.response));
+    var dest = info.callbackUrl + delim + 'SAMLResponse=' + encodeURIComponent(btoa(info.response));
+    var relayState = $('#relayState').val().trim();
+    if (relayState) {
+      dest = dest + '&RelayState=' + relayState;
+    }
+    location.href = dest;
   } else {
     location.href = location.href.replace(location.search, '');
   }
