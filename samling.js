@@ -31,6 +31,7 @@ function handleRequest(request, relayState) {
     $('#nameIdentifierFormat').val(info.login.nameIdentifierFormat);
     $('#callbackUrl').val(info.login.callbackUrl);
     $('#issuer').val(info.login.destination);
+    $('#audience').val(info.login.issuer);
     $('#inResponseTo').val(info.login.id);
     if (relayState) {
       $('#relayState').val(decodeURIComponent(relayState));
@@ -221,6 +222,7 @@ $(function() {
       cert: $('#signatureCert').val().trim(),
       issuer: $('#issuer').val().trim(),
       recipient: $('#callbackUrl').val().trim(),
+      audiences: $('#audience').val().trim(),
       inResponseTo: $('#inResponseTo').val().trim(),
       authnContextClassRef: $('#authnContextClassRef').val().trim(),
       nameIdentifierFormat: $('#nameIdentifierFormat').val().trim(),

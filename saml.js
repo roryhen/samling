@@ -53,6 +53,10 @@ exports.parseRequest = function(options, request, callback) {
         info.login.callbackUrl = rootElement.getAttribute('AssertionConsumerServiceURL');
         info.login.destination = rootElement.getAttribute('Destination');
         info.login.id = rootElement.getAttribute('ID');
+        var issuer = rootElement.getElementsByTagNameNS(ASSERTION_NS, 'Issuer')[0];
+        if (issuer) {
+          info.login.issuer = issuer.textContent;
+        }
         var nameIDPolicy = rootElement.getElementsByTagNameNS(SAMLP_NS, 'NameIDPolicy')[0];
         if (nameIDPolicy) {
           info.login.nameIdentifierFormat = nameIDPolicy.getAttribute('Format');
@@ -101,14 +105,14 @@ exports.createAssertion = function(options) {
 
   var now = new Date().toISOString();
   doc.documentElement.setAttribute('IssueInstant', now);
-  var conditions = doc.documentElement.getElementsByTagName('saml:Conditions');
-  var confirmationData = doc.documentElement.getElementsByTagName('saml:SubjectConfirmationData');
+  var conditions = doc.documentElement.getElementsByTagName('saml:Conditions')[0];
+  var confirmationData = doc.documentElement.getElementsByTagName('saml:SubjectConfirmationData')[0];
 
   if (options.lifetimeInSeconds) {
     var expires = new Date(Date.now() + options.lifetimeInSeconds*1000).toISOString();
-    conditions[0].setAttribute('NotBefore', now);
-    conditions[0].setAttribute('NotOnOrAfter', expires);
-    confirmationData[0].setAttribute('NotOnOrAfter', expires);
+    conditions.setAttribute('NotBefore', now);
+    conditions.setAttribute('NotOnOrAfter', expires);
+    confirmationData.setAttribute('NotOnOrAfter', expires);
   }
 
   if (options.audiences) {
@@ -123,10 +127,10 @@ exports.createAssertion = function(options) {
   }
 
   if (options.recipient)
-    confirmationData[0].setAttribute('Recipient', options.recipient);
+    confirmationData.setAttribute('Recipient', options.recipient);
 
   if (options.inResponseTo)
-    confirmationData[0].setAttribute('InResponseTo', options.inResponseTo);
+    confirmationData.setAttribute('InResponseTo', options.inResponseTo);
 
   if (options.attributes) {
     var statement = doc.createElementNS(ASSERTION_NS, 'saml:AttributeStatement');
