@@ -8,12 +8,11 @@ function deleteCookie() {
   document.cookie = COOKIE_NAME + '=' + ';path=/;expires=' + (new Date(1));
 }
 
-function logout(info) {
+function logout(info, relayState) {
   deleteCookie();
   if (info) {
     var delim = info.callbackUrl.indexOf('?') === -1 ? '?' : '&';
     var dest = info.callbackUrl + delim + 'SAMLResponse=' + encodeURIComponent(btoa(info.response));
-    var relayState = $('#relayState').val().trim();
     if (relayState) {
       dest = dest + '&RelayState=' + relayState;
     }
@@ -27,7 +26,7 @@ function handleRequest(request, relayState) {
   // parse the saml request
   window.SAML.parseRequest({issuer: $('#issuer').val().trim(), callbackUrl: $('#callbackUrl').val().trim()}, request, function(info) {
     if (info.logout) {
-      logout(info.logout);
+      logout(info.logout, relayState);
       return;
     }
 
