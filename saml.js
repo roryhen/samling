@@ -177,14 +177,18 @@ exports.createAssertion = function(options) {
     authnCtxClassRef.textContent = options.authnContextClassRef;
   }
 
-  var token = removeWhitespace(doc.toString());
-  var signed;
+  var sig = exports.signDocument(doc.toString(), "//*[local-name(.)='Assertion']", options);
+  return sig.getSignedXml();
+};
 
+exports.signDocument = function(token, reference, options) {
+  options.signatureAlgorithm = options.signatureAlgorithm || 'rsa-sha256';
+  options.digestAlgorithm = options.digestAlgorithm || 'sha256';
+  token = removeWhitespace(token);
   var cert = pemToCert(options.cert);
-
   var sig = new SignedXml(null, { signatureAlgorithm: algorithms.signature[options.signatureAlgorithm], idAttribute: 'ID' });
   sig.signingKey = options.key;
-  sig.addReference("//*[local-name(.)='Assertion']",
+  sig.addReference(reference,
       ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"],
       algorithms.digest[options.digestAlgorithm]);
   sig.keyInfoProvider = {
@@ -193,10 +197,8 @@ exports.createAssertion = function(options) {
     }
   };
   sig.computeSignature(token, {prefix: 'ds', location: {action: 'after', reference : "//*[local-name(.)='Issuer']"}});
-  signed = sig.getSignedXml();
-
-  return signed;
-};
+  return sig;
+}
 
 exports.createResponse = function(options) {
   var response = '<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0"';

@@ -11,12 +11,15 @@ function deleteCookie() {
 function logout(info, relayState) {
   deleteCookie();
   if (info) {
-    var delim = info.callbackUrl.indexOf('?') === -1 ? '?' : '&';
-    var dest = info.callbackUrl + delim + 'SAMLResponse=' + encodeURIComponent(btoa(info.response));
-    if (relayState) {
-      dest = dest + '&RelayState=' + relayState;
-    }
-    location.href = dest;
+    var options = {
+      key: $('#signatureKey').val().trim(),
+      cert: $('#signatureCert').val().trim()
+    };
+    var samlResponse = window.SAML.signDocument(info.response, "//*[local-name(.)='LogoutResponse']", options);
+    $('#samlResponse').val(btoa(samlResponse.getSignedXml()));
+    var form = $('#samlResponseForm')[0];
+    form.action = info.callbackUrl;
+    form.submit();
   } else {
     location.href = location.href.replace(location.search, '');
   }
