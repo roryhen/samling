@@ -8,7 +8,7 @@ function deleteCookie() {
   document.cookie = COOKIE_NAME + '=' + ';path=/;expires=' + (new Date(1));
 }
 
-function logout(info, relayState) {
+function logout(info) {
   deleteCookie();
   if (info) {
     var options = {
@@ -28,8 +28,12 @@ function logout(info, relayState) {
 function handleRequest(request, relayState) {
   // parse the saml request
   window.SAML.parseRequest({issuer: $('#issuer').val().trim(), callbackUrl: $('#callbackUrl').val().trim()}, request, function(info) {
+    if (relayState) {
+      $('#relayState').val(decodeURIComponent(relayState));
+    }
+
     if (info.logout) {
-      logout(info.logout, relayState);
+      logout(info.logout);
       return;
     }
 
@@ -40,10 +44,7 @@ function handleRequest(request, relayState) {
     $('#issuer').val(info.login.destination);
     $('#audience').val(info.login.issuer);
     $('#inResponseTo').val(info.login.id);
-    if (relayState) {
-      $('#relayState').val(decodeURIComponent(relayState));
-    }
-
+    
     // auto-login if we also have the username already populated because of the samling cookie
     if ($('#signedInUser').text().trim().length > 0) {
       $('#createResponse').trigger('click');
