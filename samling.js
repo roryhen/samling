@@ -4,21 +4,31 @@ window.CLIPBOARDJS = require('clipboard-js');
 window.SAML = require('./saml');
 const COOKIE_NAME = 'samling';
 
+var queryParams = {};
+
 function deleteCookie() {
   document.cookie = COOKIE_NAME + '=' + ';path=/;expires=' + (new Date(1));
 }
 
-function logout(info) {
+function logout() {
+  if (queryParams["manual"]) {
+    delete queryParams["manual"];
+    $('#navbarSamling a[href="#userDetailsTab"]').tab('show');
+    return;
+  }
+
   deleteCookie();
-  if (info) {
+  var response = $('#samlResponse').val();
+  var callbackUrl = $('#callbackUrl').val();
+  if (response && callbackUrl) {
     var options = {
       key: $('#signatureKey').val().trim(),
       cert: $('#signatureCert').val().trim()
     };
-    var samlResponse = window.SAML.signDocument(info.response, "//*[local-name(.)='LogoutResponse']", options);
+    var samlResponse = window.SAML.signDocument(response, "//*[local-name(.)='LogoutResponse']", options);
     $('#samlResponse').val(btoa(samlResponse.getSignedXml()));
     var form = $('#samlResponseForm')[0];
-    form.action = info.callbackUrl;
+    form.action = callbackUrl;
     form.submit();
   } else {
     location.href = location.href.replace(location.search, '');
@@ -33,7 +43,10 @@ function handleRequest(request, relayState) {
     }
 
     if (info.logout) {
-      logout(info.logout);
+      $('#samlResponse').val(info.logout.response);
+      $('#callbackUrl').val(info.logout.callbackUrl);
+      $('#callbackUrlReadOnly').val(info.logout.callbackUrl);
+      logout();
       return;
     }
 
@@ -41,6 +54,7 @@ function handleRequest(request, relayState) {
     $('#authnContextClassRef').val(info.login.authnContextClassRef);
     $('#nameIdentifierFormat').val(info.login.nameIdentifierFormat);
     $('#callbackUrl').val(info.login.callbackUrl);
+    $('#callbackUrlReadOnly').val(info.login.callbackUrl);
     $('#issuer').val(info.login.destination);
     $('#audience').val(info.login.issuer);
     $('#inResponseTo').val(info.login.id);
@@ -66,6 +80,15 @@ $(function() {
   $('#signatureCert').val(localStorage.getItem('certVal') || fs.readFileSync('./cert.pem'));
   $('#signatureKey').val(localStorage.getItem('privateKeyVal') || fs.readFileSync('./key.pem'));
 
+  var params = location.search.split('?');
+  if (params.length > 1) {
+    var parts = params[1].split('&');
+    parts.forEach(function(part) {
+      var keyval = part.split('=');
+      queryParams[keyval[0]] = keyval[1];
+    });
+  }
+
   var userControl = $('#signedInUser');
   var cookies = document.cookie.split(';');
   cookies.forEach(function(cook) {
@@ -78,6 +101,7 @@ $(function() {
         $('#signedInAt').text(data.signedInAt);
         $('#nameIdentifier').val(data.nameIdentifier);
         $('#callbackUrl').val(data.callbackUrl);
+        $('#callbackUrlReadOnly').val(data.callbackUrl);
         $('#issuer').val(data.issuer);
         $('#authnContextClassRef').val(data.authnContextClassRef);
         $('#nameIdentifierFormat').val(data.nameIdentifierFormat);
@@ -317,17 +341,8 @@ $(function() {
     form.submit();
   });
 
-  if (location.search.indexOf('SAMLRequest=') !== -1) {
-    var params = location.search.split('?');
-    if (params.length > 1) {
-      var params = params[1].split('&');
-      var query = {};
-      params.forEach(function(part) {
-        var keyval = part.split('=');
-        query[keyval[0]] = keyval[1];
-      });
-      handleRequest(query['SAMLRequest'], query['RelayState']);
-    }
+  if (queryParams['SAMLRequest']) {
+    handleRequest(queryParams['SAMLRequest'], queryParams['RelayState']);
   }
 
 });
