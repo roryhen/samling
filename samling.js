@@ -45,8 +45,10 @@ function handleRequest(request, relayState) {
     $('#audience').val(info.login.issuer);
     $('#inResponseTo').val(info.login.id);
     
-    // auto-login if we also have the username already populated because of the samling cookie
-    if ($('#signedInUser').text().trim().length > 0) {
+    // auto-login if:
+    // 1. ForceAuthn="true" was not specified on the authentication request
+    // 2. we also have the username already populated because of the samling cookie
+    if (!info.login.forceAuthn && $('#signedInUser').text().trim().length > 0) {
       $('#createResponse').trigger('click');
       setTimeout(function() {
         $('#postSAMLResponse').trigger('click');

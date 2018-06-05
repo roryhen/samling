@@ -53,6 +53,7 @@ exports.parseRequest = function(options, request, callback) {
         info.login.callbackUrl = rootElement.getAttribute('AssertionConsumerServiceURL');
         info.login.destination = rootElement.getAttribute('Destination');
         info.login.id = rootElement.getAttribute('ID');
+        info.login.forceAuthn = rootElement.getAttribute('ForceAuthn') === "true";
         var issuer = rootElement.getElementsByTagNameNS(ASSERTION_NS, 'Issuer')[0];
         if (issuer) {
           info.login.issuer = issuer.textContent;
