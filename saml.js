@@ -159,6 +159,9 @@ exports.createAssertion = function(options) {
 
   doc.getElementsByTagName('saml:AuthnStatement')[0].setAttribute('AuthnInstant', now);
 
+  if (options.sessionExpiration) {
+    doc.getElementsByTagName('saml:AuthnStatement')[0].setAttribute('SessionNotOnOrAfter', options.sessionExpiration);
+  }
   if (options.sessionIndex) {
     doc.getElementsByTagName('saml:AuthnStatement')[0].setAttribute('SessionIndex', options.sessionIndex);
   }
