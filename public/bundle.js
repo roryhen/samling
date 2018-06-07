@@ -39502,6 +39502,9 @@ exports.createAssertion = function(options) {
 
   doc.getElementsByTagName('saml:AuthnStatement')[0].setAttribute('AuthnInstant', now);
 
+  if (options.sessionExpiration) {
+    doc.getElementsByTagName('saml:AuthnStatement')[0].setAttribute('SessionNotOnOrAfter', options.sessionExpiration);
+  }
   if (options.sessionIndex) {
     doc.getElementsByTagName('saml:AuthnStatement')[0].setAttribute('SessionIndex', options.sessionIndex);
   }
@@ -39641,6 +39644,18 @@ function handleRequest(request, relayState) {
   });
 }
 
+function _getSessionExpiration(format) {
+  var sessionDuration = $('#sessionDuration').val().trim();
+    if (sessionDuration.length === 0) {
+      $('#sessionDurationControl').addClass('has-error');
+      !error && $('#sessionDuration').focus();
+      error = true;
+    } else if (!sessionDuration.match(/^\d+$/)) {
+      error && $('#sessionDuration').focus();
+      error = true;
+    }
+  return new Date(Date.now() + parseInt(sessionDuration) * 1000 * 60)["to"+format+"String"]();
+}
 
 $(function() {
 
@@ -39831,6 +39846,7 @@ $(function() {
       authnContextClassRef: $('#authnContextClassRef').val().trim(),
       nameIdentifierFormat: $('#nameIdentifierFormat').val().trim(),
       nameIdentifier: $('#nameIdentifier').val().trim(),
+      sessionExpiration: _getSessionExpiration("ISO"),
       sessionIndex: ('_samling_' + (Math.random() * 10000000)).replace('.', '_'),
       lifetimeInSeconds: $('#lifetimeInSeconds').val().trim(),
       attributes: attributes
@@ -39867,16 +39883,6 @@ $(function() {
     }
     $('#samlResponse').val(btoa(samlResponse));
 
-    var sessionDuration = $('#sessionDuration').val().trim();
-    if (sessionDuration.length === 0) {
-      $('#sessionDurationControl').addClass('has-error');
-      !error && $('#sessionDuration').focus();
-      error = true;
-    } else if (!sessionDuration.match(/^\d+$/)) {
-      error && $('#sessionDuration').focus();
-      error = true;
-    }
-
     var callbackUrl = $('#callbackUrl').val().trim();
     if (callbackUrl.length === 0) {
       $('#callbackUrlControl').addClass('has-error');
@@ -39889,11 +39895,6 @@ $(function() {
     }
 
     // write the "login" cookie
-    var expires = '';
-    if (sessionDuration !== '0') {
-      expires = 'expires=' + new Date(Date.now() + parseInt(sessionDuration) * 1000 * 60).toUTCString();
-    }
-
     var cookieData = {
       signedInAt: new Date().toUTCString(),
       nameIdentifier: $('#nameIdentifier').val().trim(),
@@ -39904,7 +39905,7 @@ $(function() {
     };
     var cookieValue = btoa(JSON.stringify(cookieData));
     deleteCookie();
-    document.cookie = COOKIE_NAME + '=' + cookieValue + ';path=/;' + expires;
+    document.cookie = COOKIE_NAME + '=' + cookieValue + ';path=/;expires=' + _getSessionExpiration("UTC");
 
     var form = $('#samlResponseForm')[0];
     form.action = callbackUrl;
