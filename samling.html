@@ -41,6 +41,9 @@
         <a class="samling-nav-item" href="#userDetailsTab" aria-controls="userDetailsTab" role="tab"
            data-toggle="pill">User Details</a></li>
       <li role="presentation" class="">
+        <a class="samling-nav-item" href="#showMetadata" aria-controls="showMetadata" role="tab"
+           data-toggle="pill">IdP Metadata</a></li>
+      <li role="presentation" class="">
         <a class="samling-nav-item" href="#whatsThisTab" aria-controls="whatsThisTab" role="tab"
            data-toggle="pill">What is this?</a></li>
     </ul>
@@ -252,6 +255,20 @@
                 <dd>Log the user out, erasing the cookie.</dd>
               </dl>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" class="tab-pane samling-tab" id="showMetadata">
+        <div class="row">
+          <div class="col-md-9" role="main">
+            <h2>SAMLING IdP Metadata</h2>
+            <p>
+              <pre id="idpMetadata" style="text-overflow: auto"></pre>
+            </p>
+            <p>
+              <a class="btn btn-primary" href="/public/metadata.xml" role="button" id="downladMetadata" download="samling-metadata.xml">Download IdP Metadata</a>
+            </p>
           </div>
         </div>
       </div>

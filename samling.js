@@ -343,5 +343,13 @@ $(function() {
     handleRequest(queryParams['SAMLRequest'], queryParams['RelayState']);
   }
 
+  $.get({
+    url: "/public/metadata.xml",
+    dataType: "text",
+    success: function(data) {
+      $("#idpMetadata").text(data);
+    }
+  });
+
 });
 

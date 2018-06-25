@@ -23,7 +23,7 @@ If there is a <strong>SAMLRequest</strong> query parameter present with a `Logou
 SAMLING will log out the currently logged-in user.
 
 Generating a SAML Response requires the use of a private key and certificate for signing the SAML Assertion.
-SAMLING enables to generate a random private/public key and to save them in the local storage so they are used in
+SAMLING comes bundled with default keys, but also enables to generate a random private/public key and to save them in the local storage so they are used in
 subsequent SAML responses.
 
 ## Installation
@@ -51,14 +51,29 @@ You can now access samling at http://localhost:8080
 
 ## How to Use
 
+### SAMLRequest with AuthnRequest
+
+Use `https://capriza.github.io/samling/samling.html?SAMLRequest=<SAML_REQUEST>` to initiate a login request via samling.
+Specifying `ForceAuthn="true"` in the request will force Samling to land on the properties page instead of auto submitting the SAML response
+in case the user is already logged-in.
+
+### SAMLRequest with LogoutRequest
+
+Use `https://capriza.github.io/samling/samling.html?SAMLRequest=<SAML_REQUEST>` to initiate a logout request.
+If there is an active user session, the SAML Response will be automatically posted back.
+
+Add `manual=1` query parameters to the url to logout manually instead of the response being automatically posted back.
+
+### IdP Metadata
+
+Use `https://capriza.github.io/samling/metadata.xml` to obtain the IdP metadata of Samling.
+
+### Manual Usage
+
 1. Open up `https://capriza.github.io/samling/samling.html`. You'll land on the **SAML Response Properties** section.
 2. Fill in the required properties fields. Required fields are marked with an asterisks (*).
    * `Name Identifier` - the user name
-   * `Callback URL` - where to send the SAML response
-   * `Private Key` -  the private key to use for siging the SAML assertion
-   * `Public Certificate` - the public certificate to embed in the SALM response
-   * `New Pair` - generate a new private/public key pair
-   * `Save` - save the private key and public certificate to the local storage so that they are automatically loaded on re-visits.
+   * `Assertion Consumer URL` - where to send the SAML response
 3. Click on **Create Response**. You will be be taken the **SAML Response** section.
 4. Review the SAML response and set the session duration, then click on **Post Response**. At this point a session cookie
    is created for the logged in user.
