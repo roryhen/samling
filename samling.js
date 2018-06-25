@@ -344,7 +344,7 @@ $(function() {
   }
 
   $.get({
-    url: "/public/metadata.xml",
+    url: "public/metadata.xml",
     dataType: "text",
     success: function(data) {
       $("#idpMetadata").text(data);
