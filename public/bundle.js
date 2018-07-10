@@ -39690,6 +39690,7 @@ $(function() {
         $('#issuer').val(data.issuer);
         $('#authnContextClassRef').val(data.authnContextClassRef);
         $('#nameIdentifierFormat').val(data.nameIdentifierFormat);
+        $('#samlAttributes').val(data.attributes);
         $('#inResponseTo').val(data.id);
          } catch (e) {
         $('#signedInAt').text('ERROR: ' + e.message);
@@ -39901,7 +39902,8 @@ $(function() {
       callbackUrl: $('#callbackUrl').val().trim(),
       issuer: $('#issuer').val().trim(),
       authnContextClassRef: $('#authnContextClassRef').val().trim(),
-      nameIdentifierFormat: $('#nameIdentifierFormat').val().trim()
+      nameIdentifierFormat: $('#nameIdentifierFormat').val().trim(),
+      attributes: $('#samlAttributes').val().trim()
     };
     var cookieValue = btoa(JSON.stringify(cookieData));
     deleteCookie();
