@@ -66,7 +66,7 @@ Add `manual=1` query parameters to the url to logout manually instead of the res
 
 ### IdP Metadata
 
-Use `https://capriza.github.io/samling/metadata.xml` to obtain the IdP metadata of Samling.
+Use `https://capriza.github.io/samling/public/metadata.xml` to obtain the IdP metadata of Samling.
 
 ### Manual Usage
 
