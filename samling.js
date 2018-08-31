@@ -3,6 +3,7 @@ var fs = require('fs');
 window.CLIPBOARDJS = require('clipboard-js');
 window.SAML = require('./saml');
 const COOKIE_NAME = 'samling';
+var meta = fs.readFileSync('./public/metadata.xml.tpl').toString("utf8");
 
 var queryParams = {};
 
@@ -84,13 +85,20 @@ function _getSessionExpiration(format) {
   return new Date(Date.now() + parseInt(sessionDuration) * 1000 * 60)["to"+format+"String"]();
 }
 
+function _updateMetadata(cert) {
+  var flatCert = cert.toString().replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").replace(/[\s]/g, "");
+  $('#idpMetadata').text(meta.replace("_CERTIFICATE_", flatCert));
+}
+
 $(function() {
 
   $('[data-toggle="tooltip"]').tooltip();
   $('[data-toggle="popover"]').popover();
 
-  $('#signatureCert').val(localStorage.getItem('certVal') || fs.readFileSync('./cert.pem'));
-  $('#signatureKey').val(localStorage.getItem('privateKeyVal') || fs.readFileSync('./key.pem'));
+  var cert = localStorage.getItem('certVal') || fs.readFileSync('./cert.pem').toString("utf8");
+  $('#signatureCert').val(cert);
+  $('#signatureKey').val(localStorage.getItem('privateKeyVal') || fs.readFileSync('./key.pem').toString("utf8"));
+  _updateMetadata(cert);
 
   var params = location.search.split('?');
   if (params.length > 1) {
@@ -123,6 +131,14 @@ $(function() {
         $('#signedInAt').text('ERROR: ' + e.message);
       }
     }
+  });
+
+  $('#copyMetadata').click(function() {
+    window.CLIPBOARDJS.copy($('#idpMetadata').text());
+    $('#copyMetadata').tooltip('show');
+    setTimeout(function() {
+      $('#copyMetadata').tooltip('hide');
+    }, 1500);
   });
 
   $('#copyResponseToClipboard').click(function() {
@@ -212,8 +228,10 @@ $(function() {
   });
 
   $('#saveKeyAndCert').click(function() {
-    localStorage.setItem('certVal', $('#signatureCert').val().trim());
+    var cert = $('#signatureCert').val().trim();
+    localStorage.setItem('certVal', cert);
     localStorage.setItem('privateKeyVal', $('#signatureKey').val().trim());
+    _updateMetadata(cert);
   });
 
   $('#createResponse').click(function() {
@@ -344,14 +362,6 @@ $(function() {
   if (queryParams['SAMLRequest']) {
     handleRequest(queryParams['SAMLRequest'], queryParams['RelayState']);
   }
-
-  $.get({
-    url: "public/metadata.xml",
-    dataType: "text",
-    success: function(data) {
-      $("#idpMetadata").text(data);
-    }
-  });
 
 });
 

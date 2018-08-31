@@ -66,7 +66,7 @@ Add `manual=1` query parameters to the url to logout manually instead of the res
 
 ### IdP Metadata
 
-Use `https://capriza.github.io/samling/public/metadata.xml` to obtain the IdP metadata of Samling.
+Use `https://capriza.github.io/samling/public/metadata.xml` to obtain the _default_ IdP metadata of Samling. Note that the downloadable metadata contains the default public certificate of samling - it is not suitable for generated keys. If you generate a new key pair you can obtain the metadata with the correct certificate from the "IdP Metadata" view.
 
 ### Manual Usage
 

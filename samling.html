@@ -200,7 +200,7 @@
                     SAML Response *
                   </label>
                   <button id="copyResponseToClipboard" type="button" class="btn btn-default btn-xs pull-right"
-                          data-toggle="tooltip" title="Copied!" data-trigger="manual" data-placement="top">
+                          data-toggle="tooltip" title="Copied" data-trigger="manual" data-placement="top">
                     Copy to Clipboard
                   </button>
                   <textarea class="form-control" rows="28" name="SAMLResponse" id="samlResponse"
@@ -267,7 +267,8 @@
               <pre id="idpMetadata" style="text-overflow: auto"></pre>
             </p>
             <p>
-              <a class="btn btn-primary" href="public/metadata.xml" role="button" id="downladMetadata" download="samling-metadata.xml">Download IdP Metadata</a>
+              <a class="btn btn-primary pull-right" href="#" role="button" id="copyMetadata" 
+              data-toggle="tooltip" title="Copied" data-trigger="manual" data-placement="top">Copy Metadata</a>
             </p>
           </div>
         </div>
