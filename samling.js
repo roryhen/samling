@@ -306,8 +306,10 @@ $(function() {
       destination: callbackUrl,
       assertion: assertion,
       samlStatusCode: $('#samlStatusCode').val().trim(),
-      samlStatusMessage: $('#samlStatusMessage').val().trim()
+      samlStatusMessage: $('#samlStatusMessage').val().trim(),
+      signResponse: $('#signResponse').is(":checked") ? options : undefined,
     });
+    
     $('#samlResponse').val(response);
     $('#callbackUrlReadOnly').val(callbackUrl);
     $('#navbarSamling a[href="#samlResponseTab"]').tab('show')

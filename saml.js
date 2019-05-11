@@ -193,7 +193,7 @@ exports.signDocument = function(token, reference, options) {
   var sig = new SignedXml(null, { signatureAlgorithm: algorithms.signature[options.signatureAlgorithm], idAttribute: 'ID' });
   sig.signingKey = options.key;
   sig.addReference(reference,
-      ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"],
+      ["http://www.w3.org/2001/10/xml-exc-c14n#"],
       algorithms.digest[options.digestAlgorithm]);
   sig.keyInfoProvider = {
     getKeyInfo: function (key, prefix) {
@@ -222,6 +222,10 @@ exports.createResponse = function(options) {
   response += '</samlp:Status>';
   response += options.assertion;
   response += '</samlp:Response>';
+
+  if (options.signResponse) {
+    response = exports.signDocument(response, "//*[local-name(.)='Response']", options.signResponse).getSignedXml();
+  }
 
   return response;
 };

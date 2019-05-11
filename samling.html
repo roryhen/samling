@@ -112,7 +112,14 @@
                   <small class="form-text text-muted">place each attribute on a separate line</small>
                   <textarea class="form-control" rows="3" id="samlAttributes" placeholder="attr1=value1&#10;attr2=value2"></textarea>
               </div>
-
+              <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-check" id="signResponseControl">
+                      <input type="checkbox" class="form-check-input" id="signResponse">
+                      <label class="form-check-label" for="signResponse">Sign Response (in addition to the assertion)</label>
+                    </div>
+                  </div>
+                </div>
               <div class="row">
                 <div class="form-group col-md-6" id="signatureKeyControl">
                   <label class="control-label" for="signatureKey">
@@ -142,6 +149,8 @@
                 <dd>The user name that will appear in the assertion as logged-in.</dd>
                 <dt>Assertion Consumer URL</dt>
                 <dd>The assertion consumer URL where the SAML Response will be posted back to.</dd>
+                <dt>Sign Response</dt>
+                <dd>If checked, the SAML response will be signed in addition to the assertion.</dd>
                 <dt>Signature Private Key</dt>
                 <dd>The private key that will be used to sign the SAML assertion.</dd>
                 <dt>Signature Certificate</dt>
@@ -215,7 +224,7 @@
             <div class="sidebar-module">
               <dl>
                 <dt>SAML Response</dt>
-                <dd>This is the saml response the will be posted to the <b>Callback URL</b>.</dd>
+                <dd>This is the saml response the will be posted to the <b>Assertion Consumer URL</b>.</dd>
                 <dt>Copy to Clipboard</dt>
                 <dd>Copy the SAML response XML to the clipboard.</dd>
                 <dt>Session Duration</dt>
@@ -223,8 +232,10 @@
                   that
                   the cookie will expire after closing the browser tab.
                 </dd>
-                <dt>Callback URL</dt>
-                <dd>The consumer URL where the SAML Response will be posted.</dd>
+                <dt>Assertion Consumer URL</dt>
+                <dd>(readonly) The consumer URL where the SAML Response will be posted.</dd>
+                <dt>RelayState</dt>
+                <dd>The RelayState parameter that will posted back to the Assertion Consumer URL along with the SAML response.</dd>
               </dl>
             </div>
           </div>
